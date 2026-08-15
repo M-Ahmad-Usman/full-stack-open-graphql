@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { randomUUID: uuid } = require('node:crypto')
 
 let persons = [
   {
@@ -43,6 +44,15 @@ const typeDefs = /* GraphQL */ `
     allPersons: [Person!]!
     findPerson(name: String!): Person
   }
+
+  type Mutation {
+    addPerson(
+      name: String!
+      phone: String
+      street: String!
+      city: String!
+    ): Person
+  }
 `
 
 const resolvers = {
@@ -58,6 +68,13 @@ const resolvers = {
         street: root.street,
         city: root.city
       }
+    }
+  },
+  Mutation: {
+    addPerson: (root, args) => {
+      const person = { ...args, id: uuid() }
+      persons = persons.concat(person)
+      return person
     }
   }
 }
