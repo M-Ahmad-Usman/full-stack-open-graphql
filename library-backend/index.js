@@ -1,5 +1,6 @@
 const { ApolloServer } = require("@apollo/server")
 const { startStandaloneServer } = require("@apollo/server/standalone")
+const { GraphQLError } = require("graphql")
 const { randomUUID: uuid } = require("node:crypto")
 
 let authors = [
@@ -149,6 +150,14 @@ const resolvers = {
   },
   Mutation: {
     addBook: (root, args) => {
+      if (books.find(book => book.title === args.title)) {
+        throw new GraphQLError(`'${args.title}' already exists. Book title must be unique`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title
+          }
+        })
+      }
       const newBook = { ...args, id: uuid() }
       books.push(newBook)
       if (!authors.includes(newBook.author))
