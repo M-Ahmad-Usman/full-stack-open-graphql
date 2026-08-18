@@ -1,5 +1,6 @@
 const { ApolloServer } = require("@apollo/server")
 const { startStandaloneServer } = require("@apollo/server/standalone")
+const { randomUUID: uuid } = require("node:crypto")
 
 let authors = [
   {
@@ -115,6 +116,15 @@ const typeDefs = /* GraphQL */ `
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
+
+  type Mutation {
+    addBook(
+      title: String!
+      published: Int!
+      author: String!
+      genres: [String!]!
+    ): Book
+  }
 `
 
 const resolvers = {
@@ -137,6 +147,15 @@ const resolvers = {
       return author
     })
   },
+  Mutation: {
+    addBook: (root, args) => {
+      const newBook = { ...args, id: uuid() }
+      books.push(newBook)
+      if (!authors.includes(newBook.author))
+        authors.push({ name: newBook.author, id: uuid() })
+      return newBook
+    }
+  }
 }
 
 const server = new ApolloServer({
