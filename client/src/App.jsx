@@ -1,25 +1,33 @@
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/client/react'
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 
-import Persons from './components/Persons'
+// Components
+import Persons from "./components/Persons";
+import PersonForm from "./components/PersonForm";
 
 const ALL_PERSONS = gql`
-query {
-  allPersons {
-    name
-    phone
-    id
+  query {
+    allPersons {
+      name
+      phone
+      id
+    }
   }
-}`
+`;
 
 const App = () => {
-  const result = useQuery(ALL_PERSONS)
+  const result = useQuery(ALL_PERSONS);
 
   if (result.loading) {
-    return <div>loading...</div>
+    return <div>loading...</div>;
   }
 
-  return <Persons persons={result.data.allPersons} />
-}
+  return (
+    <div>
+      <Persons persons={result.data.allPersons} />
+      <PersonForm />
+    </div>
+  );
+};
 
-export default App
+export default App;
