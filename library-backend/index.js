@@ -148,10 +148,7 @@ const resolvers = {
         else return true
       })
     },
-    allAuthors: () => authors.map(author => {
-      author.bookCount = getBookCountOfAuthor(author.name)
-      return author
-    })
+    allAuthors: () => authors
   },
   Mutation: {
     addBook: (root, args) => {
