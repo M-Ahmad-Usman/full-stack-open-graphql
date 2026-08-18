@@ -125,6 +125,11 @@ const typeDefs = /* GraphQL */ `
       author: String!
       genres: [String!]!
     ): Book
+
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author!
   }
 `
 
@@ -163,7 +168,23 @@ const resolvers = {
       if (!authors.includes(newBook.author))
         authors.push({ name: newBook.author, id: uuid() })
       return newBook
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find(author => author.name === args.name)
+      if (!author)
+        throw new GraphQLError(`Author with name '${args.name}' doesn't exists`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name
+          }
+        })
+
+      author.born = args.setBornTo
+      return author
     }
+  },
+  Author: {
+    bookCount: (root) => getBookCountOfAuthor(root.name)
   }
 }
 
