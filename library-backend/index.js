@@ -112,7 +112,7 @@ const typeDefs = /* GraphQL */ `
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks: [Book!]!
+    allBooks(author: String): [Book!]!
     allAuthors: [Author!]!
   }
 `
@@ -123,10 +123,9 @@ const resolvers = {
     authorCount: () => authors.length,
     allBooks: () => books,
     allAuthors: () => authors.map(author => {
-        author.bookCount = 0
-        books.forEach(book => { if (book.author === author.name) author.bookCount++ })
-        return author
-      })
+      author.bookCount = getBookCountOfAuthor(author.name)
+      return author
+    })
   },
 }
 
@@ -140,3 +139,6 @@ startStandaloneServer(server, {
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
+
+// Utils
+const getBookCountOfAuthor = (name) => books.reduce((bookCount, book) => book.author === name ? bookCount + 1 : bookCount, 0)
