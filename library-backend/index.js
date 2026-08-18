@@ -129,7 +129,7 @@ const typeDefs = /* GraphQL */ `
     editAuthor(
       name: String!
       setBornTo: Int!
-    ): Author!
+    ): Author
   }
 `
 
@@ -168,13 +168,9 @@ const resolvers = {
     },
     editAuthor: (root, args) => {
       const author = authors.find(author => author.name === args.name)
+
       if (!author)
-        throw new GraphQLError(`Author with name '${args.name}' doesn't exists`, {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.name
-          }
-        })
+        return null
 
       author.born = args.setBornTo
       return author
