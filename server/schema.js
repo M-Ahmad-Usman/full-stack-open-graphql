@@ -1,4 +1,3 @@
-
 const typeDefs = /* GraphQL */ `
   enum YesNo {
     YES
@@ -17,10 +16,21 @@ const typeDefs = /* GraphQL */ `
     id: ID!
   }
 
+  type User {
+    username: String!
+    friends: [Person!]!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
     personCount: Int!
     allPersons(phone: YesNo): [Person!]!
     findPerson(name: String!): Person
+    me: User
   }
 
   type Mutation {
@@ -31,7 +41,9 @@ const typeDefs = /* GraphQL */ `
       city: String!
     ): Person
     editNumber(name: String!, phone: String!): Person
+    createUser(username: String!): User
+    login(username: String!, password: String!): Token
   }
 `;
 
-module.exports = typeDefs
+module.exports = typeDefs;
