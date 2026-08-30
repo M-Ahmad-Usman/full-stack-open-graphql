@@ -1,5 +1,5 @@
 const { GraphQLError } = require("graphql");
-const jwt = require("./jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const Person = require("./models/person");
 const User = require("./models/user");
@@ -68,36 +68,36 @@ const resolvers = {
 
       return person;
     },
-  },
-  createUser: async (root, args) => {
-    const user = new User({ username: args.username });
+    createUser: async (root, args) => {
+      const user = new User({ username: args.username });
 
-    return user.save().catch((error) => {
-      throw new GraphQLError(`Creating the user failed: ${error.message}`, {
-        extensions: {
-          code: "BAD_USER_INPUT",
-          invalidArgs: args.username,
-          error,
-        },
+      return user.save().catch((error) => {
+        throw new GraphQLError(`Creating the user failed: ${error.message}`, {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.username,
+            error,
+          },
+        });
       });
-    });
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+
+      if (!user || args.password !== "secret") {
+        throw new GraphQLError("wrong credentials", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
+      }
+
+      const tokenPayload = {
+        username: user.username,
+        id: user._id,
+      };
+
+      return { value: jwt.sign(tokenPayload, process.env.JWT_SECRET) };
+    },
   },
-  login: async (root, args) => {
-    const user = await User.findOne({ username: args.username })
-
-    if (!user || args.password !== 'secret') {
-      throw new GraphQLError('wrong credentials', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
-    }
-
-    const tokenPayload = {
-      username: user.username,
-      id: user._id,
-    }
-
-    return { value: jwt.sign(tokenPayload, process.env.JWT_SECRET) }
-  }
 };
 
 module.exports = resolvers;
