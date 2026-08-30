@@ -18,6 +18,7 @@ const resolvers = {
     address: ({ city, street }) => {
       return { street, city };
     },
+  me: (root, args, context) => context.currentUser
   },
   Mutation: {
     addPerson: async (root, args) => {
