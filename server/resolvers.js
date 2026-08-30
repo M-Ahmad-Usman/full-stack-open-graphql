@@ -21,7 +21,13 @@ const resolvers = {
   me: (root, args, context) => context.currentUser
   },
   Mutation: {
-    addPerson: async (root, args) => {
+    addPerson: async (root, args, context) => {
+
+      const currentUser = context.currentUser
+
+      if (!currentUser)
+        throw new GraphQLError('not authenticated', { extensions: { code: 'UNAUTHENTICATED' } })
+
       const nameExists = await Person.exists({ name: args.name });
 
       if (nameExists) {
@@ -36,6 +42,8 @@ const resolvers = {
       const person = new Person({ ...args });
       try {
         await person.save();
+        currentUser.friends = currentUser.friends.concat(person)
+        await currentUser.save()
       } catch (error) {
         throw new GraphQLError(`Saving person failed: ${error.message}`, {
           extensions: {
