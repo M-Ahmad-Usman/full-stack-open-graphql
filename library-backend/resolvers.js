@@ -1,5 +1,4 @@
 const { GraphQLError } = require("graphql")
-const { randomUUID: uuid } = require("node:crypto")
 
 const Author = require('./models/author')
 const Book = require('./models/book')
