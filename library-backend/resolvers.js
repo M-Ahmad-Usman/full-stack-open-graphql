@@ -9,8 +9,9 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      // const { author, genre } = args
-      return Book.find({})
+      return args.genre
+        ? Book.find({ genres: args.genre }).populate('author')
+        : Book.find({}).populate('author')
     },
     allAuthors: async () => Author.find({})
   },
@@ -27,14 +28,16 @@ const resolvers = {
         })
       }
 
-      const author = (await Author.exists({ name: args.author }))
+      const author = (await Author.findOne({ name: args.author }))
         || (await (new Author({ name: args.author })).save())
 
       const newBook = new Book({ ...args, author: author._id })
-      return newBook.save()
+      await newBook.save()
+      newBook.author = author
+      return newBook
     },
     editAuthor: (root, args) => {
-      const author = authors.find(author => author.name === args.name)
+      const author = Author.find({ name: args.name })
 
       if (!author)
         return null
@@ -42,13 +45,7 @@ const resolvers = {
       author.born = args.setBornTo
       return author
     }
-  },
-  Author: {
-    bookCount: (root) => getBookCountOfAuthor(root.name)
   }
 }
-
-// Utils
-const getBookCountOfAuthor = (name) => books.reduce((bookCount, book) => book.author === name ? bookCount + 1 : bookCount, 0)
 
 module.exports = resolvers
