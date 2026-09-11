@@ -133,6 +133,13 @@ const resolvers = {
 
       return true
     },
+  },
+  Author: {
+    bookCount: async (root) => {
+      const authorId = await Author.exists({ name: root.name })
+      const authorBooks = await Book.find({ author: authorId })
+      return authorBooks.length
+    }
   }
 }
 
