@@ -62,18 +62,18 @@ const resolvers = {
       newBook.author = author
       return newBook
     },
-    editAuthor: (root, args, context) => {
+    editAuthor: async (root, args, context) => {
 
       if (!context.currentUser)
         throw new GraphQLError('not authenticated. Please login first.')
 
-      const author = Author.find({ name: args.name })
+      const author = await Author.findOne({ name: args.name })
 
       if (!author)
         return null
 
       author.born = args.setBornTo
-      return author
+      return author.save()
     },
     createUser: async (root, args) => {
       const normalizedUsername = args.username.replace(/\s+/g, ' ').trim()
