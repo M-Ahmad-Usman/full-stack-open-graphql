@@ -22,8 +22,8 @@ const startServer = (port) => {
     listen: { port },
     context: async ({ req }) => {
       const auth = req.headers.authorization
-      const loggedInUser = await getUserFromAuthHeader(auth)
-      return { loggedInUser }
+      const currentUser = await getUserFromAuthHeader(auth)
+      return { currentUser }
     }
   })
     .then(({ url }) => console.log(`Server ready at ${url}`))

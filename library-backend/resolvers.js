@@ -15,12 +15,12 @@ const resolvers = {
         : Book.find({}).populate('author')
     },
     allAuthors: async () => Author.find({}),
-    me: async (root, args, context) => context.loggedInUser
+    me: async (root, args, context) => context.currentUser
   },
   Mutation: {
     addBook: async (root, args, context) => {
 
-      if (!context.loggedInUser)
+      if (!context.currentUser)
         throw new GraphQLError('Unauthenticated. Please login first.')
 
       const normalizedTitle = args.title.replace(/\s+/g, ' ').trim()
@@ -64,7 +64,7 @@ const resolvers = {
     },
     editAuthor: (root, args, context) => {
 
-      if (!context.loggedInUser)
+      if (!context.currentUser)
         throw new GraphQLError('Unauthenticated. Please login first.')
 
       const author = Author.find({ name: args.name })
