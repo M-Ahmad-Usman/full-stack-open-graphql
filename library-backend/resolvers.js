@@ -2,6 +2,7 @@ const { GraphQLError } = require('graphql')
 
 const { Author, NAME_MIN_LENGTH } = require('./models/author')
 const { Book, TITLE_MIN_LENGTH } = require('./models/book')
+const { User, USERNAME_MIN_LENGTH } = require('./models/user')
 
 const resolvers = {
   Query: {
@@ -64,6 +65,25 @@ const resolvers = {
 
       author.born = args.setBornTo
       return author
+    },
+    createUser: (root, args) => {
+      const normalizedUsername = args.username.replace(/\s+/g, ' ').trim()
+      const normalizedFavoriteGenre = args.favoriteGenre.replace(/\s+/g, ' ').trim()
+
+      if (normalizedUsername.length < USERNAME_MIN_LENGTH)
+        throw new GraphQLError(`username too small. Minimum ${USERNAME_MIN_LENGTH} characters are required`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: normalizedUsername
+          }
+        })
+
+      const user = new User({
+        username: normalizedUsername,
+        favoriteGenre: normalizedFavoriteGenre
+      })
+
+      return user.save()
     }
   }
 }
