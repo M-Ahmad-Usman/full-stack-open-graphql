@@ -1,4 +1,5 @@
 const { GraphQLError } = require('graphql')
+const jwt = require('jsonwebtoken')
 
 const { Author, NAME_MIN_LENGTH } = require('./models/author')
 const { Book, TITLE_MIN_LENGTH } = require('./models/book')
@@ -84,6 +85,21 @@ const resolvers = {
       })
 
       return user.save()
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username })
+
+      if (!user || args.password !== 'secret123')
+        throw new GraphQLError('wrong credentials', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+
+      const tokenPayload = {
+        username: user.username,
+        id: user._id
+      }
+
+      return { value: jwt.sign(tokenPayload, process.env.JWT_SECRET) }
     }
   }
 }
