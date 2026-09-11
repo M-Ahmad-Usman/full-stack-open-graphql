@@ -1,7 +1,7 @@
-const { GraphQLError } = require("graphql")
+const { GraphQLError } = require('graphql')
 
-const Author = require('./models/author')
-const Book = require('./models/book')
+const { Author, NAME_MIN_LENGTH } = require('./models/author')
+const { Book, TITLE_MIN_LENGTH } = require('./models/book')
 
 const resolvers = {
   Query: {
@@ -16,16 +16,37 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
-      const titleExists = await Book.exists({ title: args.title })
 
-      if (titleExists) {
-        throw new GraphQLError(`'${args.title}' already exists. Book title must be unique`, {
+      const normalizedTitle = args.title.replace(/\s+/g, ' ').trim()
+      const normalizedAuthor = args.author.replace(/\s+/g, ' ').trim()
+
+      if (normalizedTitle < TITLE_MIN_LENGTH)
+        throw new GraphQLError(`Title too small. Minimum ${TITLE_MIN_LENGTH} characters are required`, {
           extensions: {
             code: 'BAD_USER_INPUT',
-            invalidArgs: args.title
+            invalidArgs: normalizedTitle
+          }
+        })
+
+      const titleExists = await Book.exists({ title: normalizedTitle })
+      if (titleExists) {
+        throw new GraphQLError(`'${normalizedTitle}' already exists. Book title must be unique`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: normalizedTitle
           }
         })
       }
+
+      // An author with name less than 4 characters cannot be created
+      // and wouldn't exist
+      if (normalizedAuthor < NAME_MIN_LENGTH)
+        throw new GraphQLError(`Author name is too small. Name at minimum must be of ${NAME_MIN_LENGTH} characters`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: normalizedAuthor
+          }
+        })
 
       const author = (await Author.findOne({ name: args.author }))
         || (await (new Author({ name: args.author })).save())
