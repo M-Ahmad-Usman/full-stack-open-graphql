@@ -21,7 +21,7 @@ const resolvers = {
     addBook: async (root, args, context) => {
 
       if (!context.currentUser)
-        throw new GraphQLError('Unauthenticated. Please login first.')
+        throw new GraphQLError('not authenticated. Please login first.')
 
       const normalizedTitle = args.title.replace(/\s+/g, ' ').trim()
       const normalizedAuthor = args.author.replace(/\s+/g, ' ').trim()
@@ -65,7 +65,7 @@ const resolvers = {
     editAuthor: (root, args, context) => {
 
       if (!context.currentUser)
-        throw new GraphQLError('Unauthenticated. Please login first.')
+        throw new GraphQLError('not authenticated. Please login first.')
 
       const author = Author.find({ name: args.name })
 
