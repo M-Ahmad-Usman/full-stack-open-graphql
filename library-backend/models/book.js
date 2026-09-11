@@ -1,13 +1,11 @@
 const mongoose = require('mongoose')
 
-const TITLE_MIN_LENGTH = 5
-
 const schema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
     unique: true,
-    minlength: TITLE_MIN_LENGTH,
+    minlength: 5,
   },
   published: {
     type: Number,
@@ -19,5 +17,4 @@ const schema = new mongoose.Schema({
   genres: [{ type: String }],
 })
 
-const Book = mongoose.model('Book', schema)
-module.exports = { Book, TITLE_MIN_LENGTH }
+module.exports = mongoose.model('Book', schema)

@@ -1,9 +1,14 @@
 const { GraphQLError } = require('graphql')
 const jwt = require('jsonwebtoken')
 
-const { Author, NAME_MIN_LENGTH } = require('./models/author')
-const { Book, TITLE_MIN_LENGTH } = require('./models/book')
-const { User, USERNAME_MIN_LENGTH } = require('./models/user')
+const Author = require('./models/author')
+const Book = require('./models/book')
+const User = require('./models/user')
+
+// From library-backend/models
+const AUTHOR_NAME_MIN_LENGTH = 4
+const BOOK_TITLE_MIN_LENGTH = 5
+const USER_USERNAME_MIN_LENGTH = 3
 
 const resolvers = {
   Query: {
@@ -26,8 +31,8 @@ const resolvers = {
       const normalizedTitle = args.title.replace(/\s+/g, ' ').trim()
       const normalizedAuthor = args.author.replace(/\s+/g, ' ').trim()
 
-      if (normalizedTitle < TITLE_MIN_LENGTH)
-        throw new GraphQLError(`Title too small. Minimum ${TITLE_MIN_LENGTH} characters are required`, {
+      if (normalizedTitle < BOOK_TITLE_MIN_LENGTH)
+        throw new GraphQLError(`Title too small. Minimum ${BOOK_TITLE_MIN_LENGTH} characters are required`, {
           extensions: {
             code: 'BAD_USER_INPUT',
             invalidArgs: normalizedTitle
@@ -46,8 +51,8 @@ const resolvers = {
 
       // An author with name less than 4 characters cannot be created
       // and wouldn't exist
-      if (normalizedAuthor < NAME_MIN_LENGTH)
-        throw new GraphQLError(`Author name is too small. Name at minimum must be of ${NAME_MIN_LENGTH} characters`, {
+      if (normalizedAuthor < AUTHOR_NAME_MIN_LENGTH)
+        throw new GraphQLError(`Author name is too small. Name at minimum must be of ${AUTHOR_NAME_MIN_LENGTH} characters`, {
           extensions: {
             code: 'BAD_USER_INPUT',
             invalidArgs: normalizedAuthor
@@ -79,8 +84,8 @@ const resolvers = {
       const normalizedUsername = args.username.replace(/\s+/g, ' ').trim()
       const normalizedFavoriteGenre = args.favoriteGenre.replace(/\s+/g, ' ').trim()
 
-      if (normalizedUsername.length < USERNAME_MIN_LENGTH)
-        throw new GraphQLError(`username too small. Minimum ${USERNAME_MIN_LENGTH} characters are required`, {
+      if (normalizedUsername.length < USER_USERNAME_MIN_LENGTH)
+        throw new GraphQLError(`username too small. Minimum ${USER_USERNAME_MIN_LENGTH} characters are required`, {
           extensions: {
             code: 'BAD_USER_INPUT',
             invalidArgs: normalizedUsername

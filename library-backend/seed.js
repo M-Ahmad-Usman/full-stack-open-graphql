@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const { Author } = require('./models/author')
-const { Book } = require('./models/book')
+const Author = require('./models/author')
+const Book = require('./models/book')
 
 const MONGODB_URI = process.env.MONGODB_URI
 
