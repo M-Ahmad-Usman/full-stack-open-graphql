@@ -67,12 +67,21 @@ const resolvers = {
       author.born = args.setBornTo
       return author
     },
-    createUser: (root, args) => {
+    createUser: async (root, args) => {
       const normalizedUsername = args.username.replace(/\s+/g, ' ').trim()
       const normalizedFavoriteGenre = args.favoriteGenre.replace(/\s+/g, ' ').trim()
 
       if (normalizedUsername.length < USERNAME_MIN_LENGTH)
         throw new GraphQLError(`username too small. Minimum ${USERNAME_MIN_LENGTH} characters are required`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: normalizedUsername
+          }
+        })
+
+      const userExists = await User.exists({ username: normalizedUsername })
+      if (userExists)
+        throw new GraphQLError('User already exists. username must be unique', {
           extensions: {
             code: 'BAD_USER_INPUT',
             invalidArgs: normalizedUsername
