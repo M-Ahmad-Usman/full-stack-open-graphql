@@ -14,7 +14,8 @@ const resolvers = {
         ? Book.find({ genres: args.genre }).populate('author')
         : Book.find({}).populate('author')
     },
-    allAuthors: async () => Author.find({})
+    allAuthors: async () => Author.find({}),
+    me: async (root, args, context) => context.loggedInUser
   },
   Mutation: {
     addBook: async (root, args) => {
