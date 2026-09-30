@@ -1,24 +1,17 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
-import { LOGIN, ME } from "../queries";
+import { LOGIN } from "../queries";
 
-const LoginForm = ({ setLoggedInUser, setPage, show }) => {
+const LoginForm = ({ setAccessToken, setPage, show }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const [login] = useMutation(LOGIN, {
     onCompleted: (data) => {
       const token = data.login.value;
-      setLoggedInUser((user) => {
-        return {
-          ...user, // to preserve loggedInUser object shape
-          token,
-        };
-      });
-      // Although loggedInUser has also id, username and favoriteGenre
-      // properties but on login only token will be set in localStorage
-      // Rest of the properties will be populated by recommendations component
-      localStorage.setItem("loggedInUser", JSON.stringify({ token }));
+
+      setAccessToken(token);
+      localStorage.setItem("accessToken", token);
 
       setUsername("");
       setPassword("");

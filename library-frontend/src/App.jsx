@@ -8,28 +8,20 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 
-// default shape for logged in and logged out users
-const loggedOutUser = {
-  id: undefined,
-  username: "",
-  favoriteGenre: "",
-  token: "",
-};
-
 const App = () => {
   const [page, setPage] = useState("authors");
-  const [loggedInUser, setLoggedInUser] = useState(
-    JSON.parse(localStorage.getItem("loggedInUser")) ?? loggedOutUser,
+  const [accessToken, setAccessToken] = useState(
+    localStorage.getItem("accessToken"),
   );
   const client = useApolloClient();
 
   const logout = () => {
-    setLoggedInUser(loggedOutUser);
+    setAccessToken(null);
     localStorage.clear();
     client.resetStore();
   };
 
-  const isUserLoggedIn = loggedInUser.token !== "";
+  const isUserLoggedIn = accessToken !== null;
 
   return (
     <div>
@@ -53,7 +45,7 @@ const App = () => {
       <NewBook show={page === "add"} />
 
       <LoginForm
-        setLoggedInUser={setLoggedInUser}
+        setAccessToken={setAccessToken}
         setPage={setPage}
         show={page === "login"}
       />

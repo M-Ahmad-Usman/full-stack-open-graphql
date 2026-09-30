@@ -8,7 +8,7 @@ import { SetContextLink } from "@apollo/client/link/context";
 import App from "./App.jsx";
 
 const authLink = new SetContextLink(({ headers }) => {
-  const token = JSON.parse(localStorage.getItem("loggedInUser"))?.token;
+  const token = localStorage.getItem("accessToken");
   return {
     headers: {
       ...headers,
