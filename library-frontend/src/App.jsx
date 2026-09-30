@@ -19,7 +19,7 @@ const loggedOutUser = {
 const App = () => {
   const [page, setPage] = useState("authors");
   const [loggedInUser, setLoggedInUser] = useState(
-    localStorage.getItem("loggedInUser") ?? loggedOutUser,
+    JSON.parse(localStorage.getItem("loggedInUser")) ?? loggedOutUser,
   );
   const client = useApolloClient();
 

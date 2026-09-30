@@ -18,7 +18,7 @@ const LoginForm = ({ setLoggedInUser, setPage, show }) => {
       // Although loggedInUser has also id, username and favoriteGenre
       // properties but on login only token will be set in localStorage
       // Rest of the properties will be populated by recommendations component
-      localStorage.setItem("loggedInUser", { token });
+      localStorage.setItem("loggedInUser", JSON.stringify({ token }));
 
       setUsername("");
       setPassword("");
